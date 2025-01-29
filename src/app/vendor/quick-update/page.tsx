@@ -1,145 +1,258 @@
 'use client';
 
 import { useState } from 'react';
-import { VegetableItem } from '@/types';
+import { motion } from 'framer-motion';
+import {
+  Package,
+  TrendingUp,
+  TrendingDown,
+  Save,
+  Search,
+  Filter,
+  Plus,
+  Minus,
+  RefreshCw,
+  AlertCircle
+} from 'lucide-react';
+import Image from 'next/image';
 
-const mockVegetables: VegetableItem[] = [
+interface InventoryItem {
+  id: string;
+  name: string;
+  currentStock: number;
+  unit: string;
+  currentPrice: number;
+  previousPrice: number;
+  image: string;
+  category: string;
+  lastUpdated: string;
+}
+
+const mockInventory: InventoryItem[] = [
   {
-    id: '1',
-    name: 'Tomatoes',
-    price: 40,
+    id: 'VEG001',
+    name: 'Fresh Tomatoes',
+    currentStock: 50,
     unit: 'kg',
-    quantity: 100,
-    quality: 5,
-    lastUpdated: '2025-01-29T10:36:14+05:30',
-    inStock: true
+    currentPrice: 40,
+    previousPrice: 35,
+    image: '/vegetables/tomatoes.jpg',
+    category: 'Vegetables',
+    lastUpdated: '2 hours ago'
   },
-  // Add more vegetables...
+  {
+    id: 'VEG002',
+    name: 'Potatoes',
+    currentStock: 75,
+    unit: 'kg',
+    currentPrice: 30,
+    previousPrice: 30,
+    image: '/vegetables/potatoes.jpg',
+    category: 'Vegetables',
+    lastUpdated: '1 hour ago'
+  },
+  {
+    id: 'VEG003',
+    name: 'Onions',
+    currentStock: 45,
+    unit: 'kg',
+    currentPrice: 35,
+    previousPrice: 40,
+    image: '/vegetables/onions.jpg',
+    category: 'Vegetables',
+    lastUpdated: '30 minutes ago'
+  }
 ];
 
+const categories = ['All', 'Vegetables', 'Fruits', 'Leafy Greens', 'Herbs'];
+
 export default function QuickUpdate() {
-  const [vegetables, setVegetables] = useState<VegetableItem[]>(mockVegetables);
-  const [selectedVegetable, setSelectedVegetable] = useState<string>('');
-  const [newPrice, setNewPrice] = useState<number>(0);
-  const [updateHistory, setUpdateHistory] = useState<Array<{
-    vegetableId: string;
-    name: string;
-    oldPrice: number;
-    newPrice: number;
-    timestamp: string;
-  }>>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [inventory, setInventory] = useState(mockInventory);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleQuickUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    const vegetable = vegetables.find(v => v.id === selectedVegetable);
-    if (!vegetable) return;
-
-    // Record the update in history
-    setUpdateHistory([
-      {
-        vegetableId: vegetable.id,
-        name: vegetable.name,
-        oldPrice: vegetable.price,
-        newPrice,
-        timestamp: new Date().toISOString()
-      },
-      ...updateHistory
-    ]);
-
-    // Update the vegetable price
-    setVegetables(vegetables.map(veg => {
-      if (veg.id === selectedVegetable) {
+  const handleStockChange = (id: string, change: number) => {
+    setInventory(prev => prev.map(item => {
+      if (item.id === id) {
         return {
-          ...veg,
-          price: newPrice,
-          lastUpdated: new Date().toISOString()
+          ...item,
+          currentStock: Math.max(0, item.currentStock + change)
         };
       }
-      return veg;
+      return item;
     }));
+  };
 
-    // Reset form
-    setSelectedVegetable('');
-    setNewPrice(0);
+  const handlePriceChange = (id: string, newPrice: number) => {
+    setInventory(prev => prev.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          currentPrice: Math.max(0, newPrice)
+        };
+      }
+      return item;
+    }));
+  };
+
+  const handleSave = () => {
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Quick Price Update</h1>
-
-      {/* Quick Update Form */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <form onSubmit={handleQuickUpdate} className="space-y-4">
+    <main className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="container mx-auto px-4 py-12"
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Vegetable
-            </label>
-            <select
-              value={selectedVegetable}
-              onChange={(e) => {
-                setSelectedVegetable(e.target.value);
-                const veg = vegetables.find(v => v.id === e.target.value);
-                if (veg) setNewPrice(veg.price);
-              }}
-              className="w-full px-4 py-2 border rounded-lg"
-              required
-            >
-              <option value="">Select a vegetable</option>
-              {vegetables.map(veg => (
-                <option key={veg.id} value={veg.id}>
-                  {veg.name} (Current: ₹{veg.price}/{veg.unit})
-                </option>
-              ))}
-            </select>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">Quick Update</h1>
+            <p className="text-gray-600">
+              Update your inventory and prices in real-time
+            </p>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              New Price (₹)
-            </label>
-            <input
-              type="number"
-              value={newPrice}
-              onChange={(e) => setNewPrice(Number(e.target.value))}
-              className="w-full px-4 py-2 border rounded-lg"
-              min="0"
-              step="0.5"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSave}
+            className="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors flex items-center gap-2"
           >
-            Update Price
-          </button>
-        </form>
-      </div>
-
-      {/* Update History */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Recent Updates</h2>
-        <div className="space-y-4">
-          {updateHistory.map((update, index) => (
-            <div key={index} className="flex items-center justify-between border-b pb-4">
-              <div>
-                <h3 className="font-medium">{update.name}</h3>
-                <p className="text-sm text-gray-600">
-                  Price changed from ₹{update.oldPrice} to ₹{update.newPrice}
-                </p>
-              </div>
-              <span className="text-sm text-gray-500">
-                {new Date(update.timestamp).toLocaleString()}
-              </span>
-            </div>
-          ))}
-
-          {updateHistory.length === 0 && (
-            <p className="text-center text-gray-500">No recent updates</p>
-          )}
+            <Save className="w-5 h-5" />
+            Save Changes
+          </motion.button>
         </div>
-      </div>
-    </div>
+
+        {/* Success Message */}
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mb-6 p-4 bg-green-100 text-green-700 rounded-xl flex items-center gap-2"
+          >
+            <RefreshCw className="w-5 h-5" />
+            Changes saved successfully!
+          </motion.div>
+        )}
+
+        {/* Search and Filter */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          <div className="flex-1 min-w-[200px]">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search items..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            </div>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-xl border transition-all whitespace-nowrap ${
+                  selectedCategory === category
+                    ? 'border-green-500 bg-green-50 text-green-700'
+                    : 'border-gray-200 hover:border-green-500 hover:bg-green-50'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Inventory Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {inventory.map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-lg p-6"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative w-16 h-16 rounded-xl overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-800">{item.name}</h3>
+                  <p className="text-sm text-gray-500">Last updated: {item.lastUpdated}</p>
+                </div>
+              </div>
+
+              {/* Stock Control */}
+              <div className="mb-6">
+                <label className="text-sm text-gray-600 mb-2 block">Current Stock</label>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => handleStockChange(item.id, -1)}
+                    className="p-2 rounded-lg border border-gray-200 hover:border-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <Minus className="w-4 h-4 text-gray-600" />
+                  </button>
+                  <div className="flex-1 text-center">
+                    <span className="text-xl font-medium text-gray-800">
+                      {item.currentStock}
+                    </span>
+                    <span className="text-gray-500 ml-1">{item.unit}</span>
+                  </div>
+                  <button
+                    onClick={() => handleStockChange(item.id, 1)}
+                    className="p-2 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition-colors"
+                  >
+                    <Plus className="w-4 h-4 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Price Control */}
+              <div>
+                <label className="text-sm text-gray-600 mb-2 block">Price per {item.unit}</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₹</span>
+                  <input
+                    type="number"
+                    value={item.currentPrice}
+                    onChange={(e) => handlePriceChange(item.id, parseFloat(e.target.value))}
+                    className="w-full pl-8 pr-4 py-2 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                  />
+                </div>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Previous: ₹{item.previousPrice}</span>
+                  {item.currentPrice !== item.previousPrice && (
+                    <span className={`flex items-center text-sm ${
+                      item.currentPrice > item.previousPrice ? 'text-red-500' : 'text-green-500'
+                    }`}>
+                      {item.currentPrice > item.previousPrice ? (
+                        <TrendingUp className="w-4 h-4" />
+                      ) : (
+                        <TrendingDown className="w-4 h-4" />
+                      )}
+                      {Math.abs(((item.currentPrice - item.previousPrice) / item.previousPrice) * 100).toFixed(1)}%
+                    </span>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </main>
   );
 }

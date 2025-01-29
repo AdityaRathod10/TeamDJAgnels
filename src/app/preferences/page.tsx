@@ -1,220 +1,344 @@
 'use client';
 
 import { useState } from 'react';
-import { UserPreferences } from '@/types';
+import { motion } from 'framer-motion';
+import {
+  Bell,
+  Mail,
+  Phone,
+  Clock,
+  MapPin,
+  Leaf,
+  Filter,
+  Heart,
+  Wallet,
+  ShieldCheck,
+  Settings,
+  Save,
+  AlertCircle
+} from 'lucide-react';
 
-const dietaryOptions = ['Vegetarian', 'Vegan', 'Low-Carb', 'Keto', 'Diabetic-Friendly'];
-const healthConditions = ['Diabetes', 'Hypertension', 'Heart Disease', 'Anemia', 'None'];
-const commonVegetables = [
-  'Tomatoes', 'Potatoes', 'Onions', 'Carrots', 'Spinach',
-  'Cauliflower', 'Broccoli', 'Bell Peppers', 'Cucumber', 'Beans'
+interface Preference {
+  id: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+}
+
+interface DietaryPreference {
+  id: string;
+  name: string;
+  description: string;
+  selected: boolean;
+}
+
+const notificationPreferences: Preference[] = [
+  {
+    id: 'email',
+    name: 'Email Notifications',
+    description: 'Receive order updates and delivery notifications via email',
+    enabled: true
+  },
+  {
+    id: 'push',
+    name: 'Push Notifications',
+    description: 'Get instant updates about your orders on your device',
+    enabled: true
+  },
+  {
+    id: 'sms',
+    name: 'SMS Alerts',
+    description: 'Get text messages for important updates',
+    enabled: false
+  }
+];
+
+const reminderPreferences: Preference[] = [
+  {
+    id: 'day_before',
+    name: '24 Hours Before',
+    description: 'Reminder one day before pickup',
+    enabled: true
+  },
+  {
+    id: 'hour_before',
+    name: '1 Hour Before',
+    description: 'Reminder one hour before pickup',
+    enabled: true
+  },
+  {
+    id: '30_min',
+    name: '30 Minutes Before',
+    description: 'Final reminder 30 minutes before pickup',
+    enabled: false
+  }
+];
+
+const dietaryPreferences: DietaryPreference[] = [
+  {
+    id: 'organic',
+    name: 'Organic Only',
+    description: 'Prefer organic vegetables when available',
+    selected: false
+  },
+  {
+    id: 'local',
+    name: 'Local Produce',
+    description: 'Prioritize locally grown vegetables',
+    selected: true
+  },
+  {
+    id: 'seasonal',
+    name: 'Seasonal',
+    description: 'Show seasonal vegetables first',
+    selected: true
+  }
 ];
 
 export default function Preferences() {
-  const [preferences, setPreferences] = useState<UserPreferences>({
-    id: '1',
-    userId: 'user1',
-    dietaryPreferences: [],
-    healthConditions: [],
-    allergies: [],
-    favoriteVegetables: [],
-    dislikedVegetables: [],
-    preferredMarkets: [],
-    budgetRange: {
-      min: 0,
-      max: 1000
-    },
-    cookingFrequency: 'daily',
-    householdSize: 1
-  });
+  const [notifications, setNotifications] = useState(notificationPreferences);
+  const [reminders, setReminders] = useState(reminderPreferences);
+  const [dietary, setDietary] = useState(dietaryPreferences);
+  const [maxDistance, setMaxDistance] = useState(5);
+  const [defaultPayment, setDefaultPayment] = useState('upi');
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Saving preferences:', preferences);
-    // Here you would typically send this to your API
-    alert('Preferences saved successfully!');
+  const togglePreference = (
+    id: string,
+    list: Preference[],
+    setList: (prefs: Preference[]) => void
+  ) => {
+    setList(
+      list.map((pref) =>
+        pref.id === id ? { ...pref, enabled: !pref.enabled } : pref
+      )
+    );
+  };
+
+  const toggleDietary = (id: string) => {
+    setDietary(
+      dietary.map((pref) =>
+        pref.id === id ? { ...pref, selected: !pref.selected } : pref
+      )
+    );
+  };
+
+  const handleSave = () => {
+    // Here you would typically save to your backend
+    setShowSaveSuccess(true);
+    setTimeout(() => setShowSaveSuccess(false), 3000);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">My Preferences</h1>
-
-      <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-8">
-        {/* Dietary Preferences */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Dietary Preferences</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {dietaryOptions.map(option => (
-              <label key={option} className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={preferences.dietaryPreferences.includes(option)}
-                  onChange={(e) => {
-                    const updated = e.target.checked
-                      ? [...preferences.dietaryPreferences, option]
-                      : preferences.dietaryPreferences.filter(item => item !== option);
-                    setPreferences({ ...preferences, dietaryPreferences: updated });
-                  }}
-                  className="mr-2"
-                />
-                {option}
-              </label>
-            ))}
-          </div>
+    <main className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="container mx-auto px-4 py-12"
+      >
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Your Preferences</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Customize your shopping experience by setting up your preferences for notifications,
+            dietary requirements, and delivery options.
+          </p>
         </div>
 
-        {/* Health Conditions */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Health Conditions</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {healthConditions.map(condition => (
-              <label key={condition} className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={preferences.healthConditions.includes(condition)}
-                  onChange={(e) => {
-                    const updated = e.target.checked
-                      ? [...preferences.healthConditions, condition]
-                      : preferences.healthConditions.filter(item => item !== condition);
-                    setPreferences({ ...preferences, healthConditions: updated });
-                  }}
-                  className="mr-2"
-                />
-                {condition}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Vegetable Preferences */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Vegetable Preferences</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Favorites */}
-            <div>
-              <h3 className="font-medium mb-2">Favorite Vegetables</h3>
-              <div className="space-y-2">
-                {commonVegetables.map(vegetable => (
-                  <label key={vegetable} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={preferences.favoriteVegetables.includes(vegetable)}
-                      onChange={(e) => {
-                        const updated = e.target.checked
-                          ? [...preferences.favoriteVegetables, vegetable]
-                          : preferences.favoriteVegetables.filter(item => item !== vegetable);
-                        setPreferences({ ...preferences, favoriteVegetables: updated });
-                      }}
-                      className="mr-2"
-                    />
-                    {vegetable}
-                  </label>
+        <div className="max-w-4xl mx-auto">
+          {/* Settings Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Notification Preferences */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl shadow-lg p-6"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <Bell className="w-6 h-6 text-green-500" />
+                <h2 className="text-xl font-semibold text-gray-800">Notifications</h2>
+              </div>
+              <div className="space-y-4">
+                {notifications.map((pref) => (
+                  <div key={pref.id} className="flex items-start gap-3">
+                    <div className="pt-0.5">
+                      <button
+                        onClick={() => togglePreference(pref.id, notifications, setNotifications)}
+                        className={`w-10 h-6 rounded-full transition-colors relative ${
+                          pref.enabled ? 'bg-green-500' : 'bg-gray-200'
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${
+                            pref.enabled ? 'left-5' : 'left-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium text-gray-800">{pref.name}</h3>
+                      <p className="text-sm text-gray-500">{pref.description}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Dislikes */}
-            <div>
-              <h3 className="font-medium mb-2">Disliked Vegetables</h3>
-              <div className="space-y-2">
-                {commonVegetables.map(vegetable => (
-                  <label key={vegetable} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={preferences.dislikedVegetables.includes(vegetable)}
-                      onChange={(e) => {
-                        const updated = e.target.checked
-                          ? [...preferences.dislikedVegetables, vegetable]
-                          : preferences.dislikedVegetables.filter(item => item !== vegetable);
-                        setPreferences({ ...preferences, dislikedVegetables: updated });
-                      }}
-                      className="mr-2"
-                    />
-                    {vegetable}
-                  </label>
+            {/* Reminder Preferences */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-2xl shadow-lg p-6"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <Clock className="w-6 h-6 text-green-500" />
+                <h2 className="text-xl font-semibold text-gray-800">Reminders</h2>
+              </div>
+              <div className="space-y-4">
+                {reminders.map((pref) => (
+                  <div key={pref.id} className="flex items-start gap-3">
+                    <div className="pt-0.5">
+                      <button
+                        onClick={() => togglePreference(pref.id, reminders, setReminders)}
+                        className={`w-10 h-6 rounded-full transition-colors relative ${
+                          pref.enabled ? 'bg-green-500' : 'bg-gray-200'
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${
+                            pref.enabled ? 'left-5' : 'left-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium text-gray-800">{pref.name}</h3>
+                      <p className="text-sm text-gray-500">{pref.description}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
+            </motion.div>
 
-        {/* Budget and Household */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Shopping Preferences</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Monthly Budget Range (₹)
-              </label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="number"
-                  value={preferences.budgetRange.min}
-                  onChange={(e) => setPreferences({
-                    ...preferences,
-                    budgetRange: { ...preferences.budgetRange, min: Number(e.target.value) }
-                  })}
-                  className="w-32 px-3 py-2 border rounded-lg"
-                  placeholder="Min"
-                />
-                <span>to</span>
-                <input
-                  type="number"
-                  value={preferences.budgetRange.max}
-                  onChange={(e) => setPreferences({
-                    ...preferences,
-                    budgetRange: { ...preferences.budgetRange, max: Number(e.target.value) }
-                  })}
-                  className="w-32 px-3 py-2 border rounded-lg"
-                  placeholder="Max"
-                />
+            {/* Dietary Preferences */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white rounded-2xl shadow-lg p-6"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <Leaf className="w-6 h-6 text-green-500" />
+                <h2 className="text-xl font-semibold text-gray-800">Dietary Preferences</h2>
               </div>
-            </div>
+              <div className="space-y-4">
+                {dietary.map((pref) => (
+                  <div key={pref.id} className="flex items-start gap-3">
+                    <div className="pt-0.5">
+                      <button
+                        onClick={() => toggleDietary(pref.id)}
+                        className={`w-10 h-6 rounded-full transition-colors relative ${
+                          pref.selected ? 'bg-green-500' : 'bg-gray-200'
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${
+                            pref.selected ? 'left-5' : 'left-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium text-gray-800">{pref.name}</h3>
+                      <p className="text-sm text-gray-500">{pref.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Cooking Frequency
-              </label>
-              <select
-                value={preferences.cookingFrequency}
-                onChange={(e) => setPreferences({
-                  ...preferences,
-                  cookingFrequency: e.target.value as UserPreferences['cookingFrequency']
-                })}
-                className="w-full px-3 py-2 border rounded-lg"
-              >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="occasionally">Occasionally</option>
-              </select>
-            </div>
+            {/* Other Preferences */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-white rounded-2xl shadow-lg p-6"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <Settings className="w-6 h-6 text-green-500" />
+                <h2 className="text-xl font-semibold text-gray-800">Other Settings</h2>
+              </div>
+              
+              {/* Maximum Distance */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-800 mb-2">
+                  Maximum Distance (km)
+                </label>
+                <input
+                  type="range"
+                  min="1"
+                  max="20"
+                  value={maxDistance}
+                  onChange={(e) => setMaxDistance(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500"
+                />
+                <div className="flex justify-between text-sm text-gray-500 mt-1">
+                  <span>1 km</span>
+                  <span>{maxDistance} km</span>
+                  <span>20 km</span>
+                </div>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Household Size
-              </label>
-              <input
-                type="number"
-                value={preferences.householdSize}
-                onChange={(e) => setPreferences({
-                  ...preferences,
-                  householdSize: Number(e.target.value)
-                })}
-                min="1"
-                className="w-32 px-3 py-2 border rounded-lg"
-              />
-            </div>
+              {/* Default Payment Method */}
+              <div>
+                <label className="block text-sm font-medium text-gray-800 mb-2">
+                  Default Payment Method
+                </label>
+                <select
+                  value={defaultPayment}
+                  onChange={(e) => setDefaultPayment(e.target.value)}
+                  className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                >
+                  <option value="upi">UPI</option>
+                  <option value="card">Credit/Debit Card</option>
+                  <option value="cash">Cash on Delivery</option>
+                </select>
+              </div>
+            </motion.div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
-        >
-          Save Preferences
-        </button>
-      </form>
-    </div>
+          {/* Save Button */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 flex justify-center"
+          >
+            <button
+              onClick={handleSave}
+              className="px-8 py-4 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors flex items-center gap-2"
+            >
+              <Save className="w-5 h-5" />
+              Save Preferences
+            </button>
+          </motion.div>
+
+          {/* Success Message */}
+          {showSaveSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 p-4 bg-green-100 text-green-700 rounded-xl flex items-center justify-center gap-2"
+            >
+              <ShieldCheck className="w-5 h-5" />
+              Preferences saved successfully!
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+    </main>
   );
 }

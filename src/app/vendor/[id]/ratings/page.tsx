@@ -9,6 +9,7 @@ import {
   ChevronUpIcon,
   ChevronDownIcon
 } from '@heroicons/react/20/solid';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 // Mock data for demonstration
 const mockVendorRating: VendorRating = {
@@ -128,6 +129,7 @@ export default function VendorRatings({ params }: { params: { id: string } }) {
   const [priceReports, setPriceReports] = useState<PriceReport[]>(mockPriceReports);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showPriceReport, setShowPriceReport] = useState(false);
+  const { t } = useLanguage();
 
   const getStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -150,10 +152,10 @@ export default function VendorRatings({ params }: { params: { id: string } }) {
   };
 
   const getVisibilityStatus = (score: number) => {
-    if (score >= 80) return { text: 'High Visibility', color: 'text-green-600' };
-    if (score >= 60) return { text: 'Normal Visibility', color: 'text-blue-600' };
-    if (score >= 40) return { text: 'Reduced Visibility', color: 'text-yellow-600' };
-    return { text: 'Limited Visibility', color: 'text-red-600' };
+    if (score >= 80) return { text: t('visibility.high'), color: 'text-green-600' };
+    if (score >= 60) return { text: t('visibility.normal'), color: 'text-blue-600' };
+    if (score >= 40) return { text: t('visibility.reduced'), color: 'text-yellow-600' };
+    return { text: t('visibility.limited'), color: 'text-red-600' };
   };
 
   return (
@@ -162,16 +164,16 @@ export default function VendorRatings({ params }: { params: { id: string } }) {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Vendor Rating</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{t('vendorRating')}</h1>
             <div className="flex items-center mt-2">
               <span className="text-3xl font-bold mr-2">{rating.overallRating.toFixed(1)}</span>
               <div className="flex">{getStars(rating.overallRating)}</div>
-              <span className="ml-2 text-gray-600">({rating.totalReviews} reviews)</span>
+              <span className="ml-2 text-gray-600">({rating.totalReviews} {t('reviews')})</span>
             </div>
           </div>
           <div className={`${getVisibilityStatus(rating.visibilityScore).color} text-right`}>
             <p className="font-medium">{getVisibilityStatus(rating.visibilityScore).text}</p>
-            <p className="text-sm">Score: {rating.visibilityScore}/100</p>
+            <p className="text-sm">{t('visibility.score')}: {rating.visibilityScore}/100</p>
           </div>
         </div>
 
@@ -179,7 +181,7 @@ export default function VendorRatings({ params }: { params: { id: string } }) {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           {Object.entries(rating.metrics).map(([key, value]) => (
             <div key={key} className="text-center">
-              <p className="text-gray-600 capitalize">{key}</p>
+              <p className="text-gray-600 capitalize">{t(`metrics.${key}`)}</p>
               <p className={`text-lg font-semibold ${getMetricColor(value)}`}>
                 {value.toFixed(1)}
               </p>
@@ -189,7 +191,7 @@ export default function VendorRatings({ params }: { params: { id: string } }) {
 
         {/* Quality Badges */}
         <div className="border-t pt-4">
-          <h2 className="text-lg font-semibold mb-3">Quality Badges</h2>
+          <h2 className="text-lg font-semibold mb-3">{t('qualityBadges')}</h2>
           <div className="flex flex-wrap gap-3">
             {rating.qualityBadges.map((badge, index) => (
               <div key={index} className="flex items-center bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
@@ -202,114 +204,120 @@ export default function VendorRatings({ params }: { params: { id: string } }) {
 
         {/* Warning Flags */}
         {rating.warningFlags.length > 0 && (
-          <div className="border-t mt-4 pt-4">
-            <h2 className="text-lg font-semibold mb-3">Warnings</h2>
+          <div className="border-t pt-4 mt-4">
+            <h2 className="text-lg font-semibold mb-3">{t('warningFlags.title')}</h2>
             <div className="space-y-2">
               {rating.warningFlags.map((flag, index) => (
                 <div key={index} className="flex items-center text-red-600">
                   <ExclamationCircleIcon className="h-5 w-5 mr-2" />
-                  <span className="capitalize">{flag.type.replace('_', ' ')} ({flag.count})</span>
+                  <span>{t(`warningFlags.${flag.type}`)} ({flag.count}x)</span>
+                  <span className="ml-2 text-sm text-gray-500">
+                    {t('warningFlags.lastReported')}: {new Date(flag.lastReported).toLocaleDateString()}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         )}
-      </div>
 
-      {/* Price Competitiveness */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-lg font-semibold mb-4">Price Comparison</h2>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-gray-600">Price Level</p>
-            <p className={`font-medium capitalize ${
-              rating.priceCompetitiveness.status === 'competitive' ? 'text-green-600' :
-              rating.priceCompetitiveness.status === 'moderate' ? 'text-yellow-600' :
-              'text-red-600'
-            }`}>
-              {rating.priceCompetitiveness.status}
-            </p>
+        {/* Improvement Suggestions */}
+        {rating.improvementSuggestions.length > 0 && (
+          <div className="border-t pt-4 mt-4">
+            <h2 className="text-lg font-semibold mb-3">{t('improvement.title')}</h2>
+            <ul className="list-disc list-inside space-y-2 text-gray-600">
+              {rating.improvementSuggestions.map((suggestion, index) => (
+                <li key={index}>{t(`improvement.${suggestion}`)}</li>
+              ))}
+            </ul>
           </div>
-          <div className="text-right">
-            <p className="text-gray-600">Comparison Score</p>
-            <p className="font-medium">{rating.priceCompetitiveness.comparisonScore}/100</p>
-          </div>
-        </div>
-
-        {/* Recent Price Reports */}
-        <h3 className="font-medium text-gray-700 mb-2">Recent Price Updates</h3>
-        <div className="space-y-3">
-          {priceReports.map((report) => (
-            <div key={report.id} className="flex items-center justify-between border-b pb-2">
-              <div>
-                <p className="font-medium">{report.itemName}</p>
-                <p className="text-sm text-gray-600">₹{report.price}/{report.unit}</p>
-              </div>
-              {report.previousPrice && (
-                <div className={`text-sm ${
-                  report.price > report.previousPrice ? 'text-red-600' : 'text-green-600'
-                }`}>
-                  {report.price > report.previousPrice ? '↑' : '↓'} from ₹{report.previousPrice}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        )}
       </div>
 
       {/* Recent Reviews */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Recent Reviews</h2>
-          <button
-            onClick={() => setShowReviewForm(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-          >
-            Write Review
-          </button>
-        </div>
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('reviews.title')}</h2>
         <div className="space-y-6">
           {rating.recentReviews.map((review) => (
-            <div key={review.id} className="border-b last:border-0 pb-4 last:pb-0">
-              <div className="flex items-center justify-between mb-2">
+            <div key={review.id} className="border-b pb-6">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center">
-                    <span className="font-medium mr-2">{review.userName}</span>
+                    <span className="font-medium text-gray-800 mr-2">{review.userName}</span>
                     {review.purchaseVerified && (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                        Verified Purchase
+                      <span className="text-green-600 text-sm flex items-center">
+                        <CheckBadgeIcon className="h-4 w-4 mr-1" />
+                        {t('reviews.verified')}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center mt-1">
-                    <div className="flex">{getStars(review.rating)}</div>
-                    <span className="text-sm text-gray-500 ml-2">
+                  <div className="flex mt-1">
+                    {getStars(review.rating)}
+                    <span className="ml-2 text-gray-500 text-sm">
                       {new Date(review.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   <button className="flex items-center text-gray-500 hover:text-gray-700">
-                    <ChevronUpIcon className="h-5 w-5" />
-                    <span className="ml-1">{review.helpful}</span>
+                    <ChevronUpIcon className="h-4 w-4 mr-1" />
+                    <span>{review.helpful} {t('reviews.helpful')}</span>
                   </button>
                   <button className="text-gray-500 hover:text-gray-700">
-                    <ChevronDownIcon className="h-5 w-5" />
+                    {t('reviews.report')}
                   </button>
                 </div>
               </div>
-              <p className="text-gray-700 mb-2">{review.comment}</p>
+              <p className="text-gray-600 mb-4">{review.comment}</p>
               {review.reply && (
-                <div className="ml-6 mt-2 bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm font-medium text-gray-700">Vendor's Reply:</p>
-                  <p className="text-sm text-gray-600">{review.reply.comment}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(review.reply.createdAt).toLocaleDateString()}
-                  </p>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <span className="font-medium text-gray-800">{t('reviews.reply')}</span>
+                    <span className="ml-2 text-sm text-gray-500">
+                      {new Date(review.reply.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-gray-600">{review.reply.comment}</p>
                 </div>
               )}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Price Reports */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('priceReports.title')}</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-3 px-4">{t('priceReports.item')}</th>
+                <th className="text-left py-3 px-4">{t('priceReports.price')}</th>
+                <th className="text-left py-3 px-4">{t('priceReports.previousPrice')}</th>
+                <th className="text-left py-3 px-4">{t('priceReports.reportType')}</th>
+                <th className="text-left py-3 px-4">{t('priceReports.reportedAt')}</th>
+                <th className="text-left py-3 px-4">{t('priceReports.verified')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {priceReports.map((report) => (
+                <tr key={report.id} className="border-b">
+                  <td className="py-3 px-4">{report.itemName}</td>
+                  <td className="py-3 px-4">₹{report.price}/{report.unit}</td>
+                  <td className="py-3 px-4">
+                    {report.previousPrice ? `₹${report.previousPrice}/${report.unit}` : '-'}
+                  </td>
+                  <td className="py-3 px-4">
+                    {t(`priceReports.reportType.${report.reportType === 'price_increase' ? 'increase' : 'regular'}`)}
+                  </td>
+                  <td className="py-3 px-4">{new Date(report.reportedAt).toLocaleDateString()}</td>
+                  <td className="py-3 px-4">
+                    {report.verified && <CheckBadgeIcon className="h-5 w-5 text-green-600" />}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

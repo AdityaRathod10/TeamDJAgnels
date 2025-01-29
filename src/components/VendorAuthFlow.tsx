@@ -1,146 +1,137 @@
-"use client";
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Upload, Store, Phone } from "lucide-react";
-import { auth, db, storage } from "@/lib/firebase";
-import { signInWithPhoneNumber, RecaptchaVerifier, ConfirmationResult } from "firebase/auth";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { Vendor } from "@/types/vendor";
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AlertCircle, Upload, Store } from "lucide-react"
+import { auth } from "@/lib/firebase/firebase"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import { createVendor } from "@/services/vendors"
+import type { VendorFormData } from "@/types/vendor"
+import { useRouter } from "next/navigation"
+import { doc, getDoc } from "firebase/firestore"
+import { db } from "@/lib/firebase/firebase"
 
 const VendorAuthFlow = () => {
+  const router = useRouter()
+
   // Authentication states
-  const [isLogin, setIsLogin] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isLogin, setIsLogin] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   // Form states
   const [loginData, setLoginData] = useState({
-    phone: "",
+    email: "",
     password: "",
-  });
+  })
 
-  const [registerData, setRegisterData] = useState<{
-    shopName: string;
-    ownerName: string;
-    phone: string;
-    password: string;
-    address: string;
-    idType: "aadhar" | "pan";
-    idNumber: string;
-    idDocument: File | null;
-    shopPhoto: File | null;
-  }>({
+  const [registerData, setRegisterData] = useState<VendorFormData>({
     shopName: "",
     ownerName: "",
     phone: "",
     password: "",
     address: "",
+    city: "",
+    email: "",
     idType: "aadhar",
     idNumber: "",
     idDocument: null,
     shopPhoto: null,
-  });
-
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-  const [otp, setOtp] = useState("");
+  })
 
   // Handle login
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError("")
 
     try {
-      // Implement Firebase phone auth login here
-      console.log("Logging in:", loginData);
+      const { user } = await signInWithEmailAndPassword(auth, loginData.email, loginData.password)
+
+      // Check if the user needs to complete their profile
+      const vendorDoc = await getDoc(doc(db, "vendors", user.uid))
+      if (vendorDoc.exists()) {
+        const vendorData = vendorDoc.data()
+        if (
+          vendorData.pendingUploads &&
+          (vendorData.pendingUploads.idDocument || vendorData.pendingUploads.shopPhoto)
+        ) {
+          router.push("/vendor/dashboard")
+        } else {
+          router.push("/vendor/dashboard")
+        }
+      } else {
+        setError("Vendor profile not found")
+      }
     } catch (err) {
-      setError("Login failed. Please try again.");
+      console.error("Login error:", err)
+      setError("Login failed. Please check your credentials and try again.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   // Handle file upload
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: "idDocument" | "shopPhoto") => {
+    const file = e.target.files?.[0]
     if (file) {
       setRegisterData((prev) => ({
         ...prev,
         [field]: file,
-      }));
+      }))
     }
-  };
+  }
 
-  // Handle OTP send
-  const handleSendOtp = async () => {
-    try {
-      const recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-      });
-      const result = await signInWithPhoneNumber(auth, `+91${registerData.phone}`, recaptcha);
-      setConfirmationResult(result);
-      alert("OTP sent!");
-    } catch (error) {
-      console.error("Error sending OTP:", error);
-      setError("Failed to send OTP. Please try again.");
-    }
-  };
+  // Replace handleSendOtp with handleRegister
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
 
-  // Handle OTP verification and registration
-  const handleVerifyOtpAndRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    if (!confirmationResult) {
-      setError("No OTP sent yet!");
-      return;
+    // Validate form
+    const validationError = validateForm()
+    if (validationError) {
+      setError(validationError)
+      setLoading(false)
+      return
     }
 
     try {
-      // Verify OTP
-      const result = await confirmationResult.confirm(otp);
-      alert("Phone number verified!");
+      // Create user with email and password
+      const userCredential = await createUserWithEmailAndPassword(auth, registerData.email, registerData.password)
+      const { user } = userCredential
 
-      // Upload files to Firebase Storage
-      const idDocRef = ref(storage, `vendors/${registerData.phone}/idDocument`);
-      const shopPhotoRef = ref(storage, `vendors/${registerData.phone}/shopPhoto`);
+      // Create vendor profile without uploading files
+      await createVendor(registerData, user.uid)
 
-      const [idDocUrl, shopPhotoUrl] = await Promise.all([
-        registerData.idDocument ? uploadBytes(idDocRef, registerData.idDocument).then((snapshot) => getDownloadURL(snapshot.ref)) : null,
-        registerData.shopPhoto ? uploadBytes(shopPhotoRef, registerData.shopPhoto).then((snapshot) => getDownloadURL(snapshot.ref)) : null,
-      ]);
-
-      // Save vendor details to Firestore
-      const vendorData: Vendor = {
-        shopName: registerData.shopName,
-        ownerName: registerData.ownerName,
-        phone: registerData.phone,
-        address: registerData.address,
-        idType: registerData.idType,
-        idNumber: registerData.idNumber,
-        idDocumentUrl: idDocUrl || "",
-        shopPhotoUrl: shopPhotoUrl || "",
-        verified: false,
-        password: "",
-        idDocument: null,
-        shopPhoto: null,
-        vendorPhoto: null
-      };
-
-      await addDoc(collection(db, "vendors"), vendorData);
-      alert("Registration successful!");
+      alert("Registration successful! Please log in to complete your profile.")
+      router.push("/vendor/dashboard")
     } catch (error) {
-      console.error("Error verifying OTP or registering:", error);
-      setError("Registration failed. Please try again.");
+      console.error("Error in registration:", error)
+      setError("Registration failed. Please try again.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
+
+  // Validate form data
+  const validateForm = () => {
+    if (!registerData.shopName) return "Shop name is required"
+    if (!registerData.ownerName) return "Owner name is required"
+    if (!registerData.phone) return "Phone number is required"
+    if (!registerData.email) return "Email is required"
+    if (!registerData.password) return "Password is required"
+    if (!registerData.city) return "City is required"
+    if (!registerData.address) return "Address is required"
+    if (!registerData.idNumber) return "ID number is required"
+    if (!registerData.idDocument) return "ID document is required"
+    if (!registerData.shopPhoto) return "Shop photo is required"
+    return null
+  }
 
   return (
     <Card className="w-full max-w-lg mx-auto">
@@ -164,29 +155,33 @@ const VendorAuthFlow = () => {
           <TabsContent value="login">
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Phone Number</label>
-                <div className="flex">
-                  <span className="inline-flex items-center px-3 border border-r-0 border-gray-300 rounded-l-md bg-gray-50 text-gray-500 text-sm">
-                    +91
-                  </span>
-                  <Input
-                    type="tel"
-                    placeholder="Enter phone number"
-                    value={loginData.phone}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLoginData((prev) => ({ ...prev, phone: e.target.value }))}
-                    className="rounded-l-none"
-                  />
-                </div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <Input
+                  type="email"
+                  placeholder="Enter email"
+                  value={loginData.email}
+                  onChange={(e) => setLoginData((prev) => ({ ...prev, email: e.target.value }))}
+                  required
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">Password</label>
                 <Input
                   type="password"
+                  placeholder="Enter password"
                   value={loginData.password}
                   onChange={(e) => setLoginData((prev) => ({ ...prev, password: e.target.value }))}
+                  required
                 />
               </div>
+
+              {error && (
+                <div className="flex items-center gap-2 text-red-500">
+                  <AlertCircle className="w-4 h-4" />
+                  <span className="text-sm">{error}</span>
+                </div>
+              )}
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Logging in..." : "Login"}
@@ -195,13 +190,14 @@ const VendorAuthFlow = () => {
           </TabsContent>
 
           <TabsContent value="register">
-            <form onSubmit={handleVerifyOtpAndRegister} className="space-y-4">
+            <form onSubmit={handleRegister} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Shop Name</label>
                 <Input
                   placeholder="Enter shop name"
                   value={registerData.shopName}
                   onChange={(e) => setRegisterData((prev) => ({ ...prev, shopName: e.target.value }))}
+                  required
                 />
               </div>
 
@@ -211,6 +207,29 @@ const VendorAuthFlow = () => {
                   placeholder="Enter owner name"
                   value={registerData.ownerName}
                   onChange={(e) => setRegisterData((prev) => ({ ...prev, ownerName: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <Input
+                  type="email"
+                  placeholder="Enter email"
+                  value={registerData.email}
+                  onChange={(e) => setRegisterData((prev) => ({ ...prev, email: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Password</label>
+                <Input
+                  type="password"
+                  placeholder="Enter password"
+                  value={registerData.password}
+                  onChange={(e) => setRegisterData((prev) => ({ ...prev, password: e.target.value }))}
+                  required
                 />
               </div>
 
@@ -226,16 +245,18 @@ const VendorAuthFlow = () => {
                     value={registerData.phone}
                     onChange={(e) => setRegisterData((prev) => ({ ...prev, phone: e.target.value }))}
                     className="rounded-l-none"
+                    required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Password</label>
+                <label className="block text-sm font-medium mb-1">City</label>
                 <Input
-                  type="password"
-                  value={registerData.password}
-                  onChange={(e) => setRegisterData((prev) => ({ ...prev, password: e.target.value }))}
+                  placeholder="Enter city"
+                  value={registerData.city}
+                  onChange={(e) => setRegisterData((prev) => ({ ...prev, city: e.target.value }))}
+                  required
                 />
               </div>
 
@@ -245,6 +266,7 @@ const VendorAuthFlow = () => {
                   placeholder="Enter shop address"
                   value={registerData.address}
                   onChange={(e) => setRegisterData((prev) => ({ ...prev, address: e.target.value }))}
+                  required
                 />
               </div>
 
@@ -254,6 +276,7 @@ const VendorAuthFlow = () => {
                   className="w-full p-2 border rounded-md"
                   value={registerData.idType}
                   onChange={(e) => setRegisterData((prev) => ({ ...prev, idType: e.target.value as "aadhar" | "pan" }))}
+                  required
                 >
                   <option value="aadhar">Aadhar Card</option>
                   <option value="pan">PAN Card</option>
@@ -266,6 +289,7 @@ const VendorAuthFlow = () => {
                   placeholder={`Enter ${registerData.idType} number`}
                   value={registerData.idNumber}
                   onChange={(e) => setRegisterData((prev) => ({ ...prev, idNumber: e.target.value }))}
+                  required
                 />
               </div>
 
@@ -282,9 +306,13 @@ const VendorAuthFlow = () => {
                           className="sr-only"
                           accept="image/*"
                           onChange={(e) => handleFileChange(e, "idDocument")}
+                          required
                         />
                       </label>
                     </div>
+                    {registerData.idDocument && (
+                      <p className="text-sm text-gray-500">File selected: {registerData.idDocument.name}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -302,25 +330,19 @@ const VendorAuthFlow = () => {
                           className="sr-only"
                           accept="image/*"
                           onChange={(e) => handleFileChange(e, "shopPhoto")}
+                          required
                         />
                       </label>
                     </div>
+                    {registerData.shopPhoto && (
+                      <p className="text-sm text-gray-500">File selected: {registerData.shopPhoto.name}</p>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">OTP</label>
-                <Input
-                  type="text"
-                  placeholder="Enter OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
-              </div>
-
-              <Button type="button" onClick={handleSendOtp} className="w-full" disabled={loading}>
-                Send OTP
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Registering..." : "Register"}
               </Button>
 
               {error && (
@@ -329,16 +351,12 @@ const VendorAuthFlow = () => {
                   <span className="text-sm">{error}</span>
                 </div>
               )}
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Registering..." : "Register"}
-              </Button>
             </form>
           </TabsContent>
         </Tabs>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default VendorAuthFlow;
+export default VendorAuthFlow
