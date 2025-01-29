@@ -33,6 +33,9 @@ export default function RootLayout({
                 <Link href="/markets" className="text-gray-600 hover:text-gray-800">
                   Markets
                 </Link>
+                <Link href="/market-status" className="text-gray-600 hover:text-gray-800">
+                  Live Status
+                </Link>
                 <Link href="/recommendations" className="text-gray-600 hover:text-gray-800">
                   For You
                 </Link>
