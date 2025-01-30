@@ -29,7 +29,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 100,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '2',
@@ -38,7 +39,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 150,
         quality: 4,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '3',
@@ -47,7 +49,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 120,
         quality: 4,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       }
     ]
   },
@@ -66,7 +69,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 80,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '5',
@@ -75,7 +79,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 75,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '6',
@@ -84,7 +89,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 90,
         quality: 4,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       }
     ]
   },
@@ -103,7 +109,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 40,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '7',
@@ -112,7 +119,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 120,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       }
     ]
   },
@@ -131,7 +139,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 200,
         quality: 4,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '9',
@@ -140,7 +149,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 180,
         quality: 4,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '10',
@@ -149,7 +159,8 @@ const mockVendors: Vendor[] = [
         unit: 'piece',
         quantity: 60,
         quality: 4,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       }
     ]
   },
@@ -168,7 +179,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 30,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: false
       },
       {
         id: '12',
@@ -177,7 +189,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 65,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       }
     ]
   },
@@ -196,7 +209,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 70,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '14',
@@ -205,7 +219,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 55,
         quality: 5,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: true
       },
       {
         id: '15',
@@ -214,7 +229,8 @@ const mockVendors: Vendor[] = [
         unit: 'kg',
         quantity: 85,
         quality: 4,
-        lastUpdated: '2025-01-29T10:36:14+05:30'
+        lastUpdated: '2025-01-29T10:36:14+05:30',
+        inStock: false
       }
     ]
   }

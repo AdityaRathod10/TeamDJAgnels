@@ -10,6 +10,7 @@ export interface Vendor {
   email?: string;
   openingHours?: string;
   isVerified?: boolean;
+  
 }
 
 export interface VegetableItem {

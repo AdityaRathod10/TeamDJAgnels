@@ -32,7 +32,7 @@ const mockMarkets = [
     openingHours: '06:00',
     closingHours: '20:00',
     facilities: ['Parking', 'Restrooms', 'Cold Storage'],
-    imageUrl: '/markets/crawford.jpg',
+    imageUrl: 'https://media.istockphoto.com/id/484714478/photo/elderly-indian-man.jpg?s=612x612&w=0&k=20&c=Lzv0GTbgMLInnwsiz-8zqjoqfq-5FgMNjtaXaOF0WJY=',
     vendorCount: 250,
     vegetableTypes: 45,
     averagePriceRange: {
@@ -50,7 +50,7 @@ const mockMarkets = [
     openingHours: '05:00',
     closingHours: '21:00',
     facilities: ['Parking', 'Cafe'],
-    imageUrl: '/markets/dadar.jpg',
+    imageUrl: 'https://media.istockphoto.com/id/501452950/photo/greengrocer-shop-nuwara-eliya-central-market-sri-lanka.jpg?s=612x612&w=0&k=20&c=Whdo3k5q5q4cwmEF3r4YxXXyW9L3aj20jLjwbUNQ6JU=',
     vendorCount: 180,
     vegetableTypes: 35,
     averagePriceRange: {
@@ -68,7 +68,7 @@ const mockMarkets = [
     openingHours: '07:00',
     closingHours: '19:00',
     facilities: ['Parking', 'Restrooms', 'Cafe'],
-    imageUrl: '/markets/bandra.jpg',
+    imageUrl: 'https://media.istockphoto.com/id/481095126/photo/nepali-street-seller-selling-flowers-and-vegetables-in-patan-nepal.jpg?s=612x612&w=0&k=20&c=NrBN2HRsLuUfswP4jWOOVjdLwfhtnLYO7Znh3xn2-RY=',
     vendorCount: 120,
     vegetableTypes: 40,
     averagePriceRange: {
@@ -86,7 +86,7 @@ const mockMarkets = [
     openingHours: '04:00',
     closingHours: '22:00',
     facilities: ['Parking', 'Restrooms', 'Cold Storage'],
-    imageUrl: '/markets/vashi.jpg',
+    imageUrl: 'https://media.istockphoto.com/id/491960200/photo/local-vegetable-market-in-india.jpg?s=612x612&w=0&k=20&c=wcYk_6NetigS5MKERga2gRlRY6Er90sdHRkMX3MBgZc=',
     vendorCount: 500,
     vegetableTypes: 60,
     averagePriceRange: {
@@ -104,7 +104,7 @@ const mockMarkets = [
     openingHours: '06:00',
     closingHours: '20:00',
     facilities: ['Parking', 'Restrooms'],
-    imageUrl: '/markets/malad.jpg',
+    imageUrl: 'https://media.istockphoto.com/id/1226029166/photo/fruts-vegetables-at-market-india.jpg?s=612x612&w=0&k=20&c=2zOAPF32PTDonIvCUA1PyBhXQ1X0UcKDmQKtknz_sAA=',
     vendorCount: 150,
     vegetableTypes: 30,
     averagePriceRange: {
@@ -122,7 +122,7 @@ const mockMarkets = [
     openingHours: '06:00',
     closingHours: '21:00',
     facilities: ['Parking', 'Restrooms', 'Cafe', 'Cold Storage'],
-    imageUrl: '/markets/borivali.jpg',
+    imageUrl: 'https://media.istockphoto.com/id/1463476542/photo/indian-street-sellers-selling-vegetables-in-jaipur-india.jpg?s=612x612&w=0&k=20&c=AX8PYEMME1XNrTLuLjh5Pq8N6hslBftVOc7rRVLMfDs=',
     vendorCount: 200,
     vegetableTypes: 50,
     averagePriceRange: {
@@ -273,7 +273,7 @@ export default function MarketsPage() {
   const [markets, setMarkets] = useState(mockMarkets);
   const [marketStatuses, setMarketStatuses] = useState(mockMarketStatus);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMarket, setSelectedMarket] = useState(null);
+  const [selectedMarket, setSelectedMarket] = useState<typeof mockMarkets[0] | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'vendorCount'>('distance');
@@ -522,7 +522,7 @@ export default function MarketsPage() {
               setSelectedMarket(null);
             }}
             market={selectedMarket}
-            marketStatus={marketStatuses.find(s => s.id === selectedMarket.id)}
+            marketStatus={marketStatuses.find(s => s.id === selectedMarket.id) || null}
           />
         )}
       </motion.div>
