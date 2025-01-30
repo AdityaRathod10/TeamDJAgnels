@@ -30,7 +30,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const t = (key: keyof typeof translations.en): string => {
-    return translations[language][key] || translations.en[key] || key;
+    const translation = (translations[language] as typeof translations.en)[key];
+    if (typeof translation === 'string') {
+      return translation;
+    }
+    return typeof translations.en[key] === 'string' ? translations.en[key] : key;
   };
 
   return (
@@ -41,6 +45,47 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useLanguage() {
+  
+type TranslationKeys = 
+
+| 'reviews'
+
+| 'dashboard'
+
+| 'inventory'
+
+| 'ratings'
+
+| 'sustainability'
+
+| 'settings'
+
+| 'logout'
+
+| 'welcomeMessage'
+
+| 'addNewItem'
+
+| 'totalOrders'
+
+| 'totalRevenue'
+
+| 'averageOrder'
+
+| 'priceReports'
+
+| 'inventory.title'
+
+| 'inventory.addVegetable'
+
+| 'inventory.name'
+
+| 'inventory.price'
+
+| 'inventory.stock'
+
+| 'inventory.actions';
+
   const context = useContext(LanguageContext);
   if (context === undefined) {
     throw new Error('useLanguage must be used within a LanguageProvider');

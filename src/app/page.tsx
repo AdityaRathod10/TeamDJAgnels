@@ -5,6 +5,7 @@ import { Search, Leaf, ShoppingBag, MapPin, TrendingUp, Users } from 'lucide-rea
 import ChatBot from '@/components/ChatBot';
 import VoiceCommand from '@/components/VoiceCommand';
 import ProductShowcase from '@/components/ProductShowcase';
+import { Vortex } from '../components/ui/vortex';
 
 
 const fadeInUp = {
@@ -51,9 +52,11 @@ export default function Home() {
           className="text-center relative z-10"
         >
           <motion.div variants={fadeInUp}>
+          
             <h1 className="text-5xl md:text-7xl font-bold text-green-800 mb-6 tracking-tight">
               QuickVeggie Market
             </h1>
+            
           </motion.div>
           
           <motion.p 
@@ -61,13 +64,15 @@ export default function Home() {
             className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed"
           >
             Connect with local vegetable vendors, find the best prices, and shop smarter
+            
           </motion.p>
-          
+         
           {/* Search Bar */}
           <motion.div 
             variants={fadeInUp}
             className="max-w-2xl mx-auto mb-12"
           >
+            
             <Link href="/search">
               <div className="flex items-center bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-4 cursor-pointer group">
                 <Search className="w-5 h-5 text-gray-400 group-hover:text-green-600 transition-colors duration-300" />
@@ -80,6 +85,7 @@ export default function Home() {
                 <span className="text-green-600 font-medium group-hover:translate-x-1 transition-transform duration-300">
                   Search
                 </span>
+                
               </div>
             </Link>
           </motion.div>
@@ -108,12 +114,16 @@ export default function Home() {
                 Register as Vendor
               </motion.button>
             </Link>
+            
           </motion.div>
+          
+           {/* Product Showcase Section */}
+      <ProductShowcase />
         </motion.div>
+        
       </motion.div>
 
-      {/* Product Showcase Section */}
-      <ProductShowcase />
+     
 
       {/* Features Section */}
       <motion.div 

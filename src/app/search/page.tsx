@@ -19,6 +19,7 @@ const mockVendors: Vendor[] = [
     name: 'Fresh Farms',
     marketName: 'Central Market',
     location: 'Downtown',
+    coordinates: { lat: 18.9473, lng: 72.8339 },
     rating: 4.5,
     distance: 1.2,
     vegetables: [
@@ -59,6 +60,7 @@ const mockVendors: Vendor[] = [
     name: 'Green Valley Vegetables',
     marketName: 'West Side Market',
     location: 'Western Suburbs',
+    coordinates: { lat: 19.0178, lng: 72.8478 },
     rating: 4.8,
     distance: 2.5,
     vegetables: [
@@ -99,6 +101,7 @@ const mockVendors: Vendor[] = [
     name: 'Organic Paradise',
     marketName: 'East End Bazaar',
     location: 'Eastern District',
+    coordinates: { lat: 19.0558, lng: 72.8295 },
     rating: 4.9,
     distance: 3.8,
     vegetables: [
@@ -129,6 +132,7 @@ const mockVendors: Vendor[] = [
     name: 'Local Harvest',
     marketName: 'South Market Complex',
     location: 'Southern Area',
+    coordinates: { lat: 19.1356, lng: 72.8270 },
     rating: 4.2,
     distance: 0.8,
     vegetables: [
@@ -169,6 +173,7 @@ const mockVendors: Vendor[] = [
     name: 'Farm Fresh Direct',
     marketName: 'North Square',
     location: 'Northern District',
+    coordinates: { lat: 19.0770, lng: 72.9980 },
     rating: 4.6,
     distance: 1.5,
     vegetables: [
@@ -199,6 +204,7 @@ const mockVendors: Vendor[] = [
     name: 'Nature\'s Basket',
     marketName: 'Central Complex',
     location: 'City Center',
+    coordinates: { lat: 19.0618, lng: 72.9003 },
     rating: 4.7,
     distance: 2.0,
     vegetables: [
@@ -588,7 +594,7 @@ export default function Search() {
           <VendorMapModal
             isOpen={!!mapModalVendor}
             onClose={() => setMapModalVendor(null)}
-            vendor={mapModalVendor}
+            vendor={mapModalVendor} 
           />
         )}
 

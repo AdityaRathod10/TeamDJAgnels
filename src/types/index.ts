@@ -10,8 +10,12 @@ export interface Vendor {
   email?: string;
   openingHours?: string;
   isVerified?: boolean;
-  
+  coordinates:{
+    lat: number;
+    lng: number;
+  }
 }
+
 
 export interface VegetableItem {
   id: string;
