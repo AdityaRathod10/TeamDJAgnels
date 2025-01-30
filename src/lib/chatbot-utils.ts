@@ -40,7 +40,8 @@ export async function processQuery(userQuery: string, userLocation?: { lat: numb
 
             if (distance <= radius) {
               nearbyVendors.push({
-                ...vendor,
+                name: vendor.name,
+                address: vendor.address,
                 distance: Math.round(distance * 10) / 10
               });
             }
