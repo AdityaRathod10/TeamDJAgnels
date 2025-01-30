@@ -1,0 +1,148 @@
+{
+    "vegetables": [
+      {
+        "vegetable": "Tomato",
+        "price_per_kg": 40,
+        "stock": 100,
+        "quality": "Fresh",
+        "season": "All Season",
+        "benefits": "Rich in Vitamin C, antioxidants"
+      },
+      {
+        "vegetable": "Potato",
+        "price_per_kg": 30,
+        "stock": 150,
+        "quality": "Premium",
+        "season": "All Season",
+        "benefits": "Good source of potassium, vitamin B6"
+      },
+      {
+        "vegetable": "Onion",
+        "price_per_kg": 35,
+        "stock": 200,
+        "quality": "Fresh",
+        "season": "All Season",
+        "benefits": "Anti-inflammatory, rich in antioxidants"
+      },
+      {
+        "vegetable": "Carrot",
+        "price_per_kg": 45,
+        "stock": 80,
+        "quality": "Premium",
+        "season": "Winter",
+        "benefits": "Good for eyes, rich in vitamin A"
+      },
+      {
+        "vegetable": "Spinach",
+        "price_per_kg": 60,
+        "stock": 50,
+        "quality": "Fresh",
+        "season": "Winter",
+        "benefits": "Iron-rich, good for immunity"
+      },
+      {
+        "vegetable": "Cucumber",
+        "price_per_kg": 35,
+        "stock": 70,
+        "quality": "Fresh",
+        "season": "Summer",
+        "benefits": "Hydrating, low in calories"
+      },
+      {
+        "vegetable": "Capsicum",
+        "price_per_kg": 80,
+        "stock": 40,
+        "quality": "Premium",
+        "season": "All Season",
+        "benefits": "High in Vitamin C, antioxidants"
+      },
+      {
+        "vegetable": "Cauliflower",
+        "price_per_kg": 50,
+        "stock": 60,
+        "quality": "Fresh",
+        "season": "Winter",
+        "benefits": "High in fiber, vitamins"
+      },
+      {
+        "vegetable": "Broccoli",
+        "price_per_kg": 90,
+        "stock": 30,
+        "quality": "Premium",
+        "season": "Winter",
+        "benefits": "Cancer-fighting properties, vitamin K"
+      },
+      {
+        "vegetable": "Green Beans",
+        "price_per_kg": 55,
+        "stock": 45,
+        "quality": "Fresh",
+        "season": "All Season",
+        "benefits": "Fiber-rich, low calories"
+      },
+      {
+        "vegetable": "Peas",
+        "price_per_kg": 70,
+        "stock": 40,
+        "quality": "Premium",
+        "season": "Winter",
+        "benefits": "Protein-rich, good for heart"
+      },
+      {
+        "vegetable": "Mushroom",
+        "price_per_kg": 120,
+        "stock": 25,
+        "quality": "Premium",
+        "season": "All Season",
+        "benefits": "Protein-rich, immune boosting"
+      },
+      {
+        "vegetable": "Garlic",
+        "price_per_kg": 160,
+        "stock": 30,
+        "quality": "Fresh",
+        "season": "All Season",
+        "benefits": "Heart-healthy, immune boosting"
+      },
+      {
+        "vegetable": "Ginger",
+        "price_per_kg": 180,
+        "stock": 25,
+        "quality": "Fresh",
+        "season": "All Season",
+        "benefits": "Anti-inflammatory, digestive aid"
+      },
+      {
+        "vegetable": "Beetroot",
+        "price_per_kg": 45,
+        "stock": 50,
+        "quality": "Fresh",
+        "season": "Winter",
+        "benefits": "Iron-rich, good for blood"
+      },
+      {
+        "vegetable": "Lady Finger",
+        "price_per_kg": 50,
+        "stock": 40,
+        "quality": "Fresh",
+        "season": "Summer",
+        "benefits": "Fiber-rich, good for digestion"
+      },
+      {
+        "vegetable": "Bitter Gourd",
+        "price_per_kg": 45,
+        "stock": 30,
+        "quality": "Fresh",
+        "season": "Summer",
+        "benefits": "Good for diabetes, vitamin C"
+      },
+      {
+        "vegetable": "Sweet Potato",
+        "price_per_kg": 40,
+        "stock": 60,
+        "quality": "Premium",
+        "season": "Winter",
+        "benefits": "Rich in fiber, vitamins"
+      }
+    ]
+  }

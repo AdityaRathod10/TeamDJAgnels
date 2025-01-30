@@ -108,13 +108,6 @@ export const translations = {
       pricing: 'Consider adjusting prices to be more competitive',
       stock: 'Maintain consistent stock of popular items'
     },
-    reviews: {
-      title: 'Customer Reviews',
-      verified: 'Verified Purchase',
-      helpful: 'Helpful',
-      reply: 'Reply',
-      report: 'Report'
-    },
     priceReports: {
       title: 'Price Reports',
       item: 'Item',
@@ -217,7 +210,7 @@ export const translations = {
       pricing: 'कीमतों को अधिक प्रतिस्पर्धी बनाने पर विचार करें',
       stock: 'लोकप्रिय वस्तुओं का स्टॉक बनाए रखें'
     },
-    reviews: {
+    customerReviews: {
       title: 'ग्राहक समीक्षाएं',
       verified: 'सत्यापित खरीद',
       helpful: 'सहायक',
@@ -326,7 +319,7 @@ export const translations = {
       pricing: 'किंमती अधिक स्पर्धात्मक करण्याचा विचार करा',
       stock: 'लोकप्रिय वस्तूंचा स्टॉक सातत्याने ठेवा'
     },
-    reviews: {
+    customerReviews: {
       title: 'ग्राहक रिव्ह्यूज',
       verified: 'सत्यापित खरेदी',
       helpful: 'उपयुक्त',
@@ -435,7 +428,7 @@ export const translations = {
       pricing: 'કિંમતોને વધુ સ્પર્ધાત્મક બનાવવા વિચારો',
       stock: 'લોકપ્રિય વસ્તુઓનો સ્ટોક જાળવો'
     },
-    reviews: {
+    customerReviews: {
       title: 'ગ્રાહક રિવ્યુઝ',
       verified: 'ચકાસાયેલ ખરીદી',
       helpful: 'મદદરૂપ',
@@ -544,7 +537,7 @@ export const translations = {
       pricing: 'মূল্য আরও প্রতিযোগিতামূলক করার বিবেচনা করুন',
       stock: 'জনপ্রিয় পণ্যের স্টক বজায় রাখুন'
     },
-    reviews: {
+    customerReviews: {
       title: 'গ্রাহক রিভিউ',
       verified: 'যাচাইকৃত ক্রয়',
       helpful: 'সহায়ক',
@@ -618,7 +611,7 @@ export const translations = {
 
     // Ratings
     vendorRating: 'விற்பனையாளர் மதிப்பீடு',
-    reviews: 'விமர்சனங்கள்',
+    customerReviews: 'விமர்சனங்கள்',
     metrics: {
       quality: 'தரம்',
       pricing: 'விலை',

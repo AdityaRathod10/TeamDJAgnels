@@ -5,7 +5,6 @@ import { Search, Leaf, ShoppingBag, MapPin, TrendingUp, Users } from 'lucide-rea
 import ChatBot from '@/components/ChatBot';
 import VoiceCommand from '@/components/VoiceCommand';
 import ProductShowcase from '@/components/ProductShowcase';
-import { Vortex } from '../components/ui/vortex';
 
 
 const fadeInUp = {
@@ -27,7 +26,7 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-b from-green-50 to-white relative overflow-hidden">
       {/* Background Animation */}
       <div className="absolute inset-0 -z-10">
-        
+      
       </div>
 
       <VoiceCommand />
@@ -52,11 +51,9 @@ export default function Home() {
           className="text-center relative z-10"
         >
           <motion.div variants={fadeInUp}>
-          
             <h1 className="text-5xl md:text-7xl font-bold text-green-800 mb-6 tracking-tight">
               QuickVeggie Market
             </h1>
-            
           </motion.div>
           
           <motion.p 
@@ -64,17 +61,15 @@ export default function Home() {
             className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed"
           >
             Connect with local vegetable vendors, find the best prices, and shop smarter
-            
           </motion.p>
-         
+          
           {/* Search Bar */}
           <motion.div 
             variants={fadeInUp}
             className="max-w-2xl mx-auto mb-12"
           >
-            
             <Link href="/search">
-              <div className="flex items-center bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-4 cursor-pointer group">
+              <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-4 cursor-pointer group">
                 <Search className="w-5 h-5 text-gray-400 group-hover:text-green-600 transition-colors duration-300" />
                 <input
                   type="text"
@@ -85,7 +80,6 @@ export default function Home() {
                 <span className="text-green-600 font-medium group-hover:translate-x-1 transition-transform duration-300">
                   Search
                 </span>
-                
               </div>
             </Link>
           </motion.div>
@@ -98,7 +92,7 @@ export default function Home() {
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-green-600 text-white px-8 py-4 rounded-xl font-medium hover:bg-green-700 transition-colors duration-300 flex items-center justify-center gap-2 w-full sm:w-auto"
+                className="bg-green-600 text-white px-8 py-4 rounded-xl font-medium hover:bg-green-700 transition-colors duration-300 flex items-center justify-center gap-2 w-full sm:w-auto shadow-lg hover:shadow-green-600/25"
               >
                 <MapPin className="w-5 h-5" />
                 Find Markets
@@ -108,56 +102,59 @@ export default function Home() {
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white text-green-600 border-2 border-green-600 px-8 py-4 rounded-xl font-medium hover:bg-green-50 transition-colors duration-300 flex items-center justify-center gap-2 w-full sm:w-auto"
+                className="bg-white/80 backdrop-blur-sm text-green-600 border-2 border-green-600 px-8 py-4 rounded-xl font-medium hover:bg-green-50 transition-colors duration-300 flex items-center justify-center gap-2 w-full sm:w-auto shadow-lg"
               >
                 <ShoppingBag className="w-5 h-5" />
-                Register as Vendor
+                Vendor Login
               </motion.button>
             </Link>
-            
           </motion.div>
-          
-           {/* Product Showcase Section */}
-      <ProductShowcase />
         </motion.div>
         
-      </motion.div>
+        {/* Product Showcase */}
+        <motion.div
+          variants={fadeInUp}
+          className="mt-24"
+        >
+          <ProductShowcase />
 
-     
-
-      {/* Features Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="bg-white py-24"
-      >
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-16">
-            Why Choose QuickVeggie?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <FeatureCard 
+        {/* Features Section */}
+        <motion.div 
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-24"
+        >
+          <motion.div variants={fadeInUp}>
+            <FeatureCard
               icon={<Leaf className="w-8 h-8 text-green-600" />}
-              title="Real-time Prices"
-              description="Get up-to-date prices from various vendors in your local market"
+              title="Fresh Produce"
+              description="Get access to the freshest vegetables directly from local vendors"
             />
-            <FeatureCard 
-              icon={<MapPin className="w-8 h-8 text-green-600" />}
-              title="Find Nearby Markets"
-              description="Discover and navigate local vegetable markets easily"
-            />
-            <FeatureCard 
+          </motion.div>
+          <motion.div variants={fadeInUp}>
+            <FeatureCard
               icon={<TrendingUp className="w-8 h-8 text-green-600" />}
-              title="Compare & Save"
-              description="Compare prices across different vendors to get the best deals"
+              title="Best Prices"
+              description="Compare prices and find the best deals in your area"
             />
-          </div>
-        </div>
+          </motion.div>
+          <motion.div variants={fadeInUp}>
+            <FeatureCard
+              icon={<Users className="w-8 h-8 text-green-600" />}
+              title="Local Community"
+              description="Support local vendors and strengthen your community"
+            />
+          </motion.div>
+        </motion.div>
+
+        </motion.div>
       </motion.div>
 
-      <ChatBot />
+      {/* Chatbot */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <ChatBot />
+      </div>
     </main>
   );
 }
@@ -172,15 +169,12 @@ function FeatureCard({
   icon: React.ReactNode;
 }) {
   return (
-    <motion.div 
-      whileHover={{ y: -5 }}
-      className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100"
-    >
-      <div className="bg-green-50 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+    <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group">
+      <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300">
         {icon}
       </div>
-      <h3 className="text-xl font-semibold text-gray-800 mb-3">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
-    </motion.div>
+      <h3 className="text-xl font-semibold text-gray-800 mb-2">{title}</h3>
+      <p className="text-gray-600">{description}</p>
+    </div>
   );
 }

@@ -237,22 +237,22 @@ export default function VendorInventory() {
         </div>
         <div className="relative">
           <ArrowUpDown className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600" />
-          <select
+            <select
             className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none bg-white"
             value={`${sortBy}-${sortOrder}`}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               const [newSortBy, newSortOrder] = e.target.value.split('-') as ['name' | 'price' | 'stock', 'asc' | 'desc'];
               setSortBy(newSortBy);
               setSortOrder(newSortOrder);
             }}
-          >
+            >
             <option value="name-asc">Name (A-Z)</option>
             <option value="name-desc">Name (Z-A)</option>
             <option value="price-asc">Price (Low-High)</option>
             <option value="price-desc">Price (High-Low)</option>
             <option value="stock-asc">Stock (Low-High)</option>
             <option value="stock-desc">Stock (High-Low)</option>
-          </select>
+            </select>
         </div>
       </div>
 

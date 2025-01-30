@@ -45,7 +45,7 @@ const mockRecommendations: Vegetable[] = [
   {
     id: '1',
     name: 'Fresh Spinach',
-    imageUrl: '/vegetables/spinach.jpg',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAImAuxp4MmqMQpT4ZEcw97klafmnVKVOPQg&s',
     price: 40,
     priceChange: -5,
     rating: 4.8,
@@ -57,7 +57,7 @@ const mockRecommendations: Vegetable[] = [
   {
     id: '2',
     name: 'Organic Tomatoes',
-    imageUrl: '/vegetables/tomatoes.jpg',
+    imageUrl: 'https://5.imimg.com/data5/KI/YQ/LT/ANDROID-68253365/product-jpeg-500x500.jpg',
     price: 60,
     priceChange: 2,
     rating: 4.5,
@@ -69,7 +69,7 @@ const mockRecommendations: Vegetable[] = [
   {
     id: '3',
     name: 'Baby Carrots',
-    imageUrl: '/vegetables/carrots.jpg',
+    imageUrl: 'https://www.hhs1.com/hubfs/carrots%20on%20wood-1.jpg',
     price: 45,
     priceChange: 0,
     rating: 4.6,
@@ -84,7 +84,7 @@ const mockWishlist: Vegetable[] = [
   {
     id: '4',
     name: 'Bell Peppers',
-    imageUrl: '/vegetables/bellpeppers.jpg',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/85/Green-Yellow-Red-Pepper-2009.jpg',
     price: 80,
     priceChange: -3,
     rating: 4.7,
@@ -96,7 +96,7 @@ const mockWishlist: Vegetable[] = [
   {
     id: '5',
     name: 'Broccoli',
-    imageUrl: '/vegetables/broccoli.jpg',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Broccoli_and_cross_section_edit.jpg/1200px-Broccoli_and_cross_section_edit.jpg',
     price: 90,
     priceChange: 4,
     rating: 4.4,

@@ -1,191 +1,237 @@
 'use client';
 
 import { useState } from 'react';
-import { VendorRating, Review, PriceReport } from '@/types';
-import {
-  StarIcon,
-  ExclamationCircleIcon,
-  CheckBadgeIcon,
-  ChevronUpIcon,
-  ChevronDownIcon
-} from '@heroicons/react/20/solid';
+import { motion } from 'framer-motion';
+import { StarIcon } from '@heroicons/react/20/solid';
+import { ChatBubbleLeftIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import RatingModal from '@/components/RatingModal';
+import { toast } from 'react-hot-toast';
+
+interface Rating {
+  id: string;
+  customerName: string;
+  rating: number;
+  comment: string;
+  timestamp: string;
+  orderId: string;
+}
 
 // Mock data for demonstration
-const mockVendorRating: VendorRating = {
-  vendorId: 'v1',
-  overallRating: 4.2,
-  totalReviews: 128,
-  metrics: {
-    quality: 4.5,
-    pricing: 3.8,
-    freshness: 4.3,
-    cleanliness: 4.0,
-    service: 4.4
+const mockRatings: Rating[] = [
+  {
+    id: 'r1',
+    customerName: 'John Doe',
+    rating: 5,
+    comment: 'Great quality vegetables and excellent service!',
+    timestamp: '2025-01-30T02:30:00+05:30',
+    orderId: 'ORD123'
   },
-  recentReviews: [
-    {
-      id: 'r1',
-      userId: 'u1',
-      userName: 'Priya S.',
-      rating: 4,
-      metrics: {
-        quality: 4,
-        pricing: 3,
-        freshness: 4,
-        cleanliness: 4,
-        service: 5
-      },
-      comment: 'Great quality vegetables, though slightly expensive. The vendor is very friendly and helpful.',
-      purchaseVerified: true,
-      helpful: 12,
-      reported: 0,
-      createdAt: '2025-01-28T10:30:00+05:30',
-      updatedAt: '2025-01-28T10:30:00+05:30',
-      reply: {
-        vendorId: 'v1',
-        comment: 'Thank you for your feedback! We source premium quality vegetables which affects our pricing.',
-        createdAt: '2025-01-28T11:15:00+05:30'
-      }
-    },
-    {
-      id: 'r2',
-      userId: 'u2',
-      userName: 'Rahul M.',
-      rating: 5,
-      metrics: {
-        quality: 5,
-        pricing: 4,
-        freshness: 5,
-        cleanliness: 5,
-        service: 5
-      },
-      comment: 'Best tomatoes in the area! Very fresh and reasonably priced.',
-      purchaseVerified: true,
-      helpful: 8,
-      reported: 0,
-      createdAt: '2025-01-27T16:45:00+05:30',
-      updatedAt: '2025-01-27T16:45:00+05:30'
-    }
-  ],
-  priceCompetitiveness: {
-    status: 'moderate',
-    comparisonScore: 65
+  {
+    id: 'r2',
+    customerName: 'Jane Smith',
+    rating: 4,
+    comment: 'Fresh produce, but delivery was a bit delayed.',
+    timestamp: '2025-01-29T15:45:00+05:30',
+    orderId: 'ORD124'
+  }
+];
+
+// Mock pending ratings
+const mockPendingRatings = [
+  {
+    customerName: 'Alice Johnson',
+    orderId: 'ORD125',
+    orderDate: '2025-01-30T01:30:00+05:30'
   },
-  qualityBadges: [
-    {
-      name: 'Premium Quality',
-      earnedAt: '2024-12-15T00:00:00+05:30',
-      description: 'Consistently high-quality produce'
-    },
-    {
-      name: 'Customer Favorite',
-      earnedAt: '2024-11-20T00:00:00+05:30',
-      description: 'Highly rated by customers'
-    }
-  ],
-  warningFlags: [
-    {
-      type: 'price_inflation',
-      count: 2,
-      lastReported: '2025-01-20T00:00:00+05:30'
-    }
-  ],
-  visibilityScore: 85,
-  improvementSuggestions: [
-    'Consider adjusting prices to be more competitive',
-    'Maintain consistent stock of popular items'
-  ]
-};
+  {
+    customerName: 'Bob Wilson',
+    orderId: 'ORD126',
+    orderDate: '2025-01-30T00:15:00+05:30'
+  }
+];
 
 export default function VendorRatings() {
-  const [expandedReview, setExpandedReview] = useState<string | null>(null);
+  const [ratings, setRatings] = useState<Rating[]>(mockRatings);
+  const [pendingRatings] = useState(mockPendingRatings);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<{
+    name: string;
+    orderId: string;
+  } | null>(null);
 
-  const getStarArray = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <StarIcon
-        key={i}
-        className={`h-5 w-5 ${
-          i < rating ? 'text-yellow-400' : 'text-gray-300'
-        }`}
-      />
-    ));
+  const averageRating = ratings.reduce((acc, curr) => acc + curr.rating, 0) / ratings.length;
+
+  const handleRatingSubmit = (data: any) => {
+    const newRating: Rating = {
+      id: `r${Date.now()}`,
+      customerName: data.customerName,
+      rating: data.rating,
+      comment: data.comment,
+      timestamp: data.timestamp,
+      orderId: data.orderId
+    };
+
+    setRatings(prev => [newRating, ...prev]);
+    toast.success('Rating submitted successfully!');
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+  const openRatingModal = (customer: { name: string; orderId: string }) => {
+    setSelectedCustomer(customer);
+    setIsModalOpen(true);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">Vendor Ratings & Reviews</h1>
-        
-        {/* Overall Rating Section */}
-        <div className="flex items-center mb-8">
-          <div className="text-5xl font-bold text-gray-900 mr-4">
-            {mockVendorRating.overallRating.toFixed(1)}
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 p-6">
+      {/* Header Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8"
+      >
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Customer Ratings</h1>
+        <p className="text-gray-600">View and manage your customer feedback</p>
+      </motion.div>
+
+      {/* Rating Summary */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="bg-white rounded-xl p-6 shadow-lg mb-8"
+      >
+        <div className="flex items-center justify-between">
           <div>
-            <div className="flex mb-1">{getStarArray(mockVendorRating.overallRating)}</div>
-            <p className="text-gray-700">{mockVendorRating.totalReviews} reviews</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Overall Rating</h2>
+            <div className="flex items-center gap-2">
+              <span className="text-4xl font-bold text-gray-800">{averageRating.toFixed(1)}</span>
+              <div className="flex items-center">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <StarIcon
+                    key={star}
+                    className={`w-6 h-6 ${
+                      star <= averageRating
+                        ? 'text-yellow-400'
+                        : 'text-gray-200'
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-gray-500">({ratings.length} reviews)</span>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-gray-600">Last 30 days</p>
+            <p className="text-2xl font-bold text-green-600">+{ratings.length} new reviews</p>
           </div>
         </div>
+      </motion.div>
 
-        {/* Metrics Section */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          {Object.entries(mockVendorRating.metrics).map(([key, value]) => (
-            <div key={key} className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-700 capitalize">{key}</h3>
-              <div className="flex items-center mt-1">
-                <span className="text-2xl font-semibold text-gray-900 mr-2">{value.toFixed(1)}</span>
-                <div className="flex">{getStarArray(value)}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Reviews Section */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-900">Recent Reviews</h2>
-          {mockVendorRating.recentReviews.map((review) => (
-            <div key={review.id} className="border-b border-gray-200 pb-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center mb-2">
-                    <span className="font-medium text-gray-900 mr-2">{review.userName}</span>
-                    {review.purchaseVerified && (
-                      <span className="flex items-center text-green-600 text-sm font-medium">
-                        <CheckBadgeIcon className="h-4 w-4 mr-1" />
-                        Verified Purchase
-                      </span>
-                    )}
+      {/* Pending Ratings */}
+      {pendingRatings.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8"
+        >
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Pending Ratings</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {pendingRatings.map((pending) => (
+              <motion.div
+                key={pending.orderId}
+                whileHover={{ scale: 1.02 }}
+                className="bg-white rounded-xl p-6 shadow-lg border-2 border-dashed border-green-200"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-2">
+                    <UserCircleIcon className="w-8 h-8 text-gray-400" />
+                    <div>
+                      <h3 className="font-semibold text-gray-800">{pending.customerName}</h3>
+                      <p className="text-sm text-gray-500">Order ID: {pending.orderId}</p>
+                    </div>
                   </div>
-                  <div className="flex mb-2">{getStarArray(review.rating)}</div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {formatDate(review.createdAt)}
-                  </p>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => openRatingModal({
+                      name: pending.customerName,
+                      orderId: pending.orderId
+                    })}
+                    className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-300"
+                  >
+                    Rate Now
+                  </motion.button>
+                </div>
+                <p className="text-sm text-gray-600">
+                  Order Date: {new Date(pending.orderDate).toLocaleDateString()}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Recent Reviews */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Recent Reviews</h2>
+        <div className="grid gap-4">
+          {ratings.map((rating, index) => (
+            <motion.div
+              key={rating.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 * index }}
+              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white font-semibold">
+                    {rating.customerName.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800">{rating.customerName}</h3>
+                    <p className="text-sm text-gray-500">
+                      {new Date(rating.timestamp).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <StarIcon
+                      key={i}
+                      className={`w-5 h-5 ${
+                        i < rating.rating ? 'text-yellow-400' : 'text-gray-200'
+                      }`}
+                    />
+                  ))}
                 </div>
               </div>
-              
-              <p className="text-gray-800 mt-2 text-base">{review.comment}</p>
-              
-              {review.reply && (
-                <div className="mt-4 ml-6 p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900 mb-1">Vendor's Reply:</p>
-                  <p className="text-gray-800">{review.reply.comment}</p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {formatDate(review.reply.createdAt)}
-                  </p>
-                </div>
-              )}
-            </div>
+              <div className="flex items-start gap-2 text-gray-600">
+                <ChatBubbleLeftIcon className="w-5 h-5 mt-1 flex-shrink-0" />
+                <p>{rating.comment}</p>
+              </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
+
+      {/* Rating Modal */}
+      {selectedCustomer && (
+        <RatingModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedCustomer(null);
+          }}
+          onSubmit={handleRatingSubmit}
+          customerName={selectedCustomer.name}
+          orderId={selectedCustomer.orderId}
+        />
+      )}
     </div>
   );
 }
